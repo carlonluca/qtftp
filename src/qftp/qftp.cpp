@@ -326,7 +326,7 @@ void QFtpDTP::connectToHost(const QString & host, quint16 port)
     socket->setObjectName(QLatin1String("QFtpDTP Passive state socket"));
     connect(socket, SIGNAL(connected()), SLOT(socketConnected()));
     connect(socket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(socketError(QAbstractSocket::SocketError)));
+    connect(socket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), SLOT(socketError(QAbstractSocket::SocketError)));
     connect(socket, SIGNAL(disconnected()), SLOT(socketConnectionClosed()));
     connect(socket, SIGNAL(bytesWritten(qint64)), SLOT(socketBytesWritten(qint64)));
 
@@ -771,7 +771,7 @@ void QFtpDTP::setupSocket()
     socket->setObjectName(QLatin1String("QFtpDTP Active state socket"));
     connect(socket, SIGNAL(connected()), SLOT(socketConnected()));
     connect(socket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(socketError(QAbstractSocket::SocketError)));
+    connect(socket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), SLOT(socketError(QAbstractSocket::SocketError)));
     connect(socket, SIGNAL(disconnected()), SLOT(socketConnectionClosed()));
     connect(socket, SIGNAL(bytesWritten(qint64)), SLOT(socketBytesWritten(qint64)));
 
@@ -809,7 +809,7 @@ QFtpPI::QFtpPI(QObject *parent) :
             SLOT(connectionClosed()));
     connect(&commandSocket, SIGNAL(readyRead()),
             SLOT(readyRead()));
-    connect(&commandSocket, SIGNAL(error(QAbstractSocket::SocketError)),
+    connect(&commandSocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
             SLOT(error(QAbstractSocket::SocketError)));
 
     connect(&dtp, SIGNAL(connectState(int)),
@@ -944,10 +944,10 @@ void QFtpPI::readyRead()
                 }
             }
         }
-        QString endOfMultiLine;
-        endOfMultiLine[0] = '0' + replyCode[0];
-        endOfMultiLine[1] = '0' + replyCode[1];
-        endOfMultiLine[2] = '0' + replyCode[2];
+        QString endOfMultiLine(4, '0');
+        endOfMultiLine[0] = QLatin1Char('0' + replyCode[0]);
+        endOfMultiLine[1] = QLatin1Char('0' + replyCode[1]);
+        endOfMultiLine[2] = QLatin1Char('0' + replyCode[2]);
         endOfMultiLine[3] = QLatin1Char(' ');
         QString lineCont(endOfMultiLine);
         lineCont[3] = QLatin1Char('-');
